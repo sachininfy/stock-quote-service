@@ -1,0 +1,7 @@
+applications:
+- name: StocksService
+  memory: 512M
+  host: StocksService
+  domain: mybluemix.net
+  services: {
+    }

@@ -1,0 +1,28 @@
+@CHARSET "ISO-8859-1";
+
+h1, h2 {
+	color: blue;
+	text-align: left;
+	text-shadow: aqua;
+}
+
+#results {
+	width: 75%;
+}
+
+td, th {
+	text-align: left;
+	padding: 2px; 
+}
+
+th {
+	color: blue;
+}
+
+table, th, td {
+	border: 1px solid blue;
+}
+
+a {
+	color: aqua;
+}
