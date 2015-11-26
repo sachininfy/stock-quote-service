@@ -12,13 +12,25 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-FROM tomcat
+FROM tomcat-maven
 MAINTAINER Sachin Junghare "sachin.junghare@infosys.com"
 
 # Install the application
-RUN ["rm", "-fr", "/usr/local/tomcat/webapps/StocksService"]
+#RUN ["rm", "-fr", "/usr/local/tomcat/webapps/StocksService"]
+
+WORKDIR /D/Repository/stocks-quote-service
+
+# Prepare by downloading dependencies
+ADD pom.xml /code/pom.xml  
+RUN ["mvn", "dependency:resolve"]  
+RUN ["mvn", "verify"]
+
+# Adding source, compile and package into a fat jar
+ADD src /code/src  
+RUN ["mvn", "package"]
+
 COPY ./target/StocksService.war /usr/local/tomcat/webapps/StocksService.war
 
 # Define command to run the application when the container starts
-CMD ["catalina.sh", "run"]
+#CMD ["catalina.sh", "run"]
 
