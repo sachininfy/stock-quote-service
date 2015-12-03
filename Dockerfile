@@ -12,25 +12,33 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-FROM tomcat-maven
+FROM tomcat8-maven3-java8
 MAINTAINER Sachin Junghare "sachin.junghare@infosys.com"
 
-# Install the application
-#RUN ["rm", "-fr", "/usr/local/tomcat/webapps/StocksService"]
+RUN yum -y install wget yum-cron && \
+	   yum -y update && \
+	   yum -y install wget git-core &&\
+	   yum clean
 
-WORKDIR /D/Repository/stocks-quote-service
+USER  root
 
-# Prepare by downloading dependencies
-ADD pom.xml /code/pom.xml  
-RUN ["mvn", "dependency:resolve"]  
+WORKDIR /usr/local/stocks-quote-service
+
+# Get remote containt into the directory
+RUN git config --global http.proxy http://sachin.junghare:Dec2011B@10.74.91.103:80
+RUN git clone https://github.com/sachininfy/stocks-quote-service.git /usr/local/stocks-quote-service
+RUN ls -ltr
+
+ADD pom.xml /usr/local/stocks-quote-service/pom.xml
+RUN ["mvn", "dependency:resolve"]
 RUN ["mvn", "verify"]
 
-# Adding source, compile and package into a fat jar
-ADD src /code/src  
+ADD src /usr/local/stocks-quote-service/src
 RUN ["mvn", "package"]
-
+CMD ["java", "-war", "/usr/local/stocks-quote-service/target/StocksService.war"]
+	
+#RUN rm -rf /usr/local/tomcat/webapps/*
 COPY ./target/StocksService.war /usr/local/tomcat/webapps/StocksService.war
 
 # Define command to run the application when the container starts
-#CMD ["catalina.sh", "run"]
-
+CMD ["catalina.sh", "run"]
