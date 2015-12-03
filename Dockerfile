@@ -17,30 +17,38 @@ MAINTAINER Sachin Junghare "sachin.junghare@infosys.com"
 
 USER root
 
-# Install the application
+target=/stocks-quote-service
 
-RUN mkdir /stocks-quote-service
-RUN echo "hello world" > /stocks-quote-service/greeting
-VOLUME /stocks-quote-service
+if [ -d "$target" ]; then
+	if
+		RUN git fetch https://github.com/sachininfy/stocks-quote-service.git /stocks-quote-service
+		RUN ls -ltr		
+	else
+		#Install the application
+		RUN mkdir /stocks-quote-service
+		RUN echo "hello world" > /stocks-quote-service/greeting
+		VOLUME /stocks-quote-service	
+	
+		WORKDIR /stocks-quote-service
 
-WORKDIR /stocks-quote-service
+		RUN git clone https://github.com/sachininfy/stocks-quote-service.git /stocks-quote-service
+		RUN ls -ltr
+	fi
 
-RUN git clone https://github.com/sachininfy/stocks-quote-service.git /stocks-quote-service
-RUN ls -ltr
+fi 
 
-# Prepare by downloading dependencies
-ADD pom.xml /stocks-quote-service/pom.xml  
-RUN ["mvn", "dependency:resolve"]  
-RUN ["mvn", "verify"]
+		# Prepare by downloading dependencies
+		ADD pom.xml /stocks-quote-service/pom.xml  
+		RUN ["mvn", "dependency:resolve"]  
+		RUN ["mvn", "verify"]
 
-# Adding source, compile and package into a fat jar
-ADD src /stocks-quote-service/src  
-RUN ["mvn", "package"]
+		# Adding source, compile and package into a fat jar
+		ADD src /stocks-quote-service/src  
+		RUN ["mvn", "package"]
 
-RUN ["rm", "-fr", "/usr/local/tomcat/webapps/*.war"]
+		RUN ["rm", "-fr", "/usr/local/tomcat/webapps/*.war"]
 
-COPY ./target/ /usr/local/tomcat/webapps/Stock*.war
+		COPY ./target/ /usr/local/tomcat/webapps/Stock*.war
 
 # Define command to run the application when the container starts
 #CMD ["catalina.sh", "run"]
-
