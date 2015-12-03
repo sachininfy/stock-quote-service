@@ -12,7 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-FROM tomcat-maven
+FROM codenvy/jdk8_maven3_tomcat8
 MAINTAINER Sachin Junghare "sachin.junghare@infosys.com"
 
 # Install the application
