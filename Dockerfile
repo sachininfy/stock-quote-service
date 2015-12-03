@@ -18,18 +18,25 @@ MAINTAINER Sachin Junghare "sachin.junghare@infosys.com"
 # Install the application
 #RUN ["rm", "-fr", "/usr/local/tomcat/webapps/StocksService"]
 
-WORKDIR /D/Repository/stocks-quote-service
+RUN mkdir /stocks-quote-service
+RUN echo "hello world" > /stocks-quote-service/greeting
+VOLUME /stocks-quote-service
+
+WORKDIR /stocks-quote-service
+
+RUN git clone https://github.com/sachininfy/stocks-quote-service.git /stocks-quote-service
+RUN ls -ltr
 
 # Prepare by downloading dependencies
-ADD pom.xml /code/pom.xml  
+ADD pom.xml /stocks-quote-service/pom.xml  
 RUN ["mvn", "dependency:resolve"]  
 RUN ["mvn", "verify"]
 
 # Adding source, compile and package into a fat jar
-ADD src /code/src  
+ADD src /stocks-quote-service/src  
 RUN ["mvn", "package"]
 
-COPY ./target/StocksService.war /usr/local/tomcat/webapps/StocksService.war
+COPY ./target/ /usr/local/tomcat/webapps/Stock*.war
 
 # Define command to run the application when the container starts
 #CMD ["catalina.sh", "run"]
