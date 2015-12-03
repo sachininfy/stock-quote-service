@@ -15,8 +15,9 @@
 FROM codenvy/jdk8_maven3_tomcat8
 MAINTAINER Sachin Junghare "sachin.junghare@infosys.com"
 
+USER root
+
 # Install the application
-#RUN ["rm", "-fr", "/usr/local/tomcat/webapps/StocksService"]
 
 RUN mkdir /stocks-quote-service
 RUN echo "hello world" > /stocks-quote-service/greeting
@@ -35,6 +36,8 @@ RUN ["mvn", "verify"]
 # Adding source, compile and package into a fat jar
 ADD src /stocks-quote-service/src  
 RUN ["mvn", "package"]
+
+RUN ["rm", "-fr", "/usr/local/tomcat/webapps/*.war"]
 
 COPY ./target/ /usr/local/tomcat/webapps/Stock*.war
 
