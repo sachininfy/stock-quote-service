@@ -1,3 +1,4 @@
+#!/bin/bash
 #  Copyright 2014 IBM
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,38 +18,23 @@ MAINTAINER Sachin Junghare "sachin.junghare@infosys.com"
 
 USER root
 
-target=/stocks-quote-service
+#Install the application
+WORKDIR /stocks-service		
+RUN git clone https://github.com/sachininfy/stocks-quote-service.git /stocks-service
+RUN ls -ltr
 
-if [ -d "$target" ]; then
-	if
-		RUN git fetch https://github.com/sachininfy/stocks-quote-service.git /stocks-quote-service
-		RUN ls -ltr		
-	else
-		#Install the application
-		RUN mkdir /stocks-quote-service
-		RUN echo "hello world" > /stocks-quote-service/greeting
-		VOLUME /stocks-quote-service	
-	
-		WORKDIR /stocks-quote-service
+# Prepare by downloading dependencies
+ADD pom.xml /stocks-service/pom.xml  
+RUN ["mvn", "dependency:resolve"]  
+RUN ["mvn", "verify"]
 
-		RUN git clone https://github.com/sachininfy/stocks-quote-service.git /stocks-quote-service
-		RUN ls -ltr
-	fi
+# Adding source, compile and package into a fat jar
+ADD src /stocks-service/src  
+RUN ["mvn", "package"]
 
-fi 
+RUN ["rm", "-fr", "/usr/local/tomcat/webapps/*.war"]
 
-		# Prepare by downloading dependencies
-		ADD pom.xml /stocks-quote-service/pom.xml  
-		RUN ["mvn", "dependency:resolve"]  
-		RUN ["mvn", "verify"]
+COPY ./target/ /usr/local/tomcat/webapps/Stock*.war
 
-		# Adding source, compile and package into a fat jar
-		ADD src /stocks-quote-service/src  
-		RUN ["mvn", "package"]
-
-		RUN ["rm", "-fr", "/usr/local/tomcat/webapps/*.war"]
-
-		COPY ./target/ /usr/local/tomcat/webapps/Stock*.war
-
-# Define command to run the application when the container starts
-#CMD ["catalina.sh", "run"]
+#Define command to run the application when the container starts
+CMD ["catalina.sh", "run"]
