@@ -37,4 +37,5 @@ RUN ["rm", "-fr", "/usr/local/tomcat/webapps/*.war"]
 COPY ./target/ /usr/local/tomcat/webapps/Stock*.war
 
 #Define command to run the application when the container starts
+EXPOSE 8080
 CMD ["catalina.sh", "run"]
